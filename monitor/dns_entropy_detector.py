@@ -163,7 +163,11 @@ class DNSEntropyDetector:
         label_len = len(leftmost)
         burst_count = self.check_velocity(base_domain, client_ip)
 
-        is_entropy_anomaly = (entropy >= ENTROPY_THRESHOLD and label_len >= LENGTH_THRESHOLD)
+        is_entropy_anomaly = (
+            (entropy >= ENTROPY_THRESHOLD and label_len >= LENGTH_THRESHOLD) or
+            (entropy >= 2.8 and label_len >= 30) or
+            (label_len >= 50)
+        )
         is_velocity_anomaly = (burst_count >= VELOCITY_BURST_THRESHOLD)
         is_exfiltration = is_entropy_anomaly or is_velocity_anomaly
 

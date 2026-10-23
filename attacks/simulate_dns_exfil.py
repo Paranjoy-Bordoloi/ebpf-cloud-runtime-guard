@@ -39,7 +39,7 @@ BENIGN_TEST_DOMAINS = [
     "auth.internal.cloud",
     "ubuntu.com",
     "registry.hub.docker.com",
-    "telemetry.github.com"
+    "github.com"
 ]
 
 SYNTHETIC_EXFIL_PAYLOADS = [
