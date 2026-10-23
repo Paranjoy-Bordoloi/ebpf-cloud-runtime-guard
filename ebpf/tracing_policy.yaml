@@ -1,0 +1,49 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: cloud-workload-kernel-guard
+spec:
+  kprobes:
+    - call: "sys_execve"
+      syscall: true
+      args:
+        - index: 0
+          type: "string"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "In"
+              values:
+                - "/bin/dash"
+                - "/usr/bin/dash"
+                - "/bin/nc"
+                - "/usr/bin/nc"
+                - "/bin/netcat"
+                - "/usr/bin/netcat"
+                - "/usr/bin/ncat"
+                - "/usr/bin/wget"
+                - "/bin/wget"
+          matchActions:
+            - action: Sigkill
+    - call: "udp_sendmsg"
+      syscall: false
+      args:
+        - index: 0
+          type: "sock"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "DPort"
+              values:
+                - "53"
+    - call: "tcp_connect"
+      syscall: false
+      args:
+        - index: 0
+          type: "sock"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "DPort"
+              values:
+                - "53"
