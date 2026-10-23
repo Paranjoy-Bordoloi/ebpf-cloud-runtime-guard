@@ -5,6 +5,7 @@ services:
     privileged: true
     pid: host
     volumes:
+      - /sys/kernel/btf/vmlinux:/var/lib/tetragon/btf:ro
       - /sys/kernel/btf/vmlinux:/sys/kernel/btf/vmlinux:ro
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /proc:/proc:ro
@@ -15,6 +16,7 @@ services:
       - /usr/bin/tetragon
       - --tracing-policy-dir=/etc/tetragon/tetragon.tp.d
       - --export-filename=/var/log/tetragon/tetragon.log
+      - --disable-kprobe-multi=true
     restart: unless-stopped
 
   monitor:
