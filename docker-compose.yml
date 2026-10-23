@@ -1,0 +1,61 @@
+services:
+  tetragon:
+    image: quay.io/cilium/tetragon:v1.1.0
+    container_name: tetragon
+    privileged: true
+    pid: host
+    volumes:
+      - /sys/kernel/btf/vmlinux:/sys/kernel/btf/vmlinux:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /proc:/proc:ro
+      - /sys/kernel/debug:/sys/kernel/debug:rw
+      - ./ebpf/tracing_policy.yaml:/etc/tetragon/tetragon.tp.d/tracing_policy.yaml:ro
+      - tetragon-logs:/var/log/tetragon:rw
+    command:
+      - /usr/bin/tetragon
+      - --tracing-policy-dir=/etc/tetragon/tetragon.tp.d
+      - --export-filename=/var/log/tetragon/tetragon.log
+    restart: unless-stopped
+
+  monitor:
+    build:
+      context: ./monitor
+      dockerfile: Dockerfile
+    container_name: dns-entropy-monitor
+    networks:
+      cloud_runtime_net:
+        ipv4_address: 172.28.0.53
+    ports:
+      - "53:53/udp"
+    volumes:
+      - tetragon-logs:/var/log/tetragon:rw
+    depends_on:
+      - tetragon
+    restart: unless-stopped
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: cloud-workload-app
+    networks:
+      cloud_runtime_net:
+        ipv4_address: 172.28.0.100
+    dns:
+      - 172.28.0.53
+    ports:
+      - "8080:8080"
+    depends_on:
+      - monitor
+    restart: unless-stopped
+
+networks:
+  cloud_runtime_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.0.1
+
+volumes:
+  tetragon-logs:
