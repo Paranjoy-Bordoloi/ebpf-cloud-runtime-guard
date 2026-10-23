@@ -18,6 +18,8 @@ spec:
                 - "/usr/bin/dash"
                 - "/bin/nc"
                 - "/usr/bin/nc"
+                - "/bin/nc.openbsd"
+                - "/usr/bin/nc.openbsd"
                 - "/bin/netcat"
                 - "/usr/bin/netcat"
                 - "/usr/bin/ncat"
