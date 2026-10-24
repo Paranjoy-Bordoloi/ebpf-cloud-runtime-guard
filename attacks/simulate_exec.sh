@@ -9,6 +9,16 @@ COLOR_YELLOW="\033[1;33m"
 COLOR_CYAN="\033[1;36m"
 COLOR_BOLD="\033[1m"
 
+if ! command -v curl &>/dev/null; then
+    echo -e "${COLOR_RED}[ERROR] 'curl' command not found. Please install curl (e.g., sudo apt install -y curl).${COLOR_RESET}"
+    exit 1
+fi
+
+if ! command -v python3 &>/dev/null; then
+    echo -e "${COLOR_RED}[ERROR] 'python3' command not found. Please install python3.${COLOR_RESET}"
+    exit 1
+fi
+
 TEMP_RESP_FILE="/tmp/test_exec_resp.json"
 
 TOTAL_TESTS=0
